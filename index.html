@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Shop Final Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="#" onclick="location.reload()">🚀 E-Shop Pro</a>
+        <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-outline-light position-relative" onclick="app.abrirCarrinho()" data-bs-toggle="modal" data-bs-target="#modalCarrinho">
+                🛒 Carrinho <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+            </button>
+            <div id="auth-section"></div>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+    <div id="login-container" class="card mx-auto mb-5 shadow border-0" style="max-width: 350px; display: none;">
+        <div class="card-body">
+            <h5 class="text-center mb-3">Acessar Conta</h5>
+            <input type="text" id="user-login" class="form-control mb-2" placeholder="Usuário (admin)">
+            <input type="password" id="pass-login" class="form-control mb-3" placeholder="Senha (123)">
+            <button class="btn btn-primary w-100" onclick="auth.login()">Entrar</button>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4 align-items-end bg-white p-3 rounded shadow-sm">
+        <div class="col-md-4">
+            <label class="small fw-bold text-muted">BUSCAR</label>
+            <input type="text" id="buscaProd" class="form-control" placeholder="Nome do produto..." oninput="app.render()">
+        </div>
+        <div class="col-md-2">
+            <label class="small fw-bold text-muted">CATEGORIA</label>
+            <select id="filtroCat" class="form-select" onchange="app.render()">
+                <option value="">Todas</option>
+                <option value="Eletrônicos">Eletrônicos</option>
+                <option value="Acessórios">Acessórios</option>
+                <option value="Casa">Casa</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="small fw-bold text-muted">PREÇO</label>
+            <select id="filtroOrdem" class="form-select" onchange="app.render()">
+                <option value="asc">Menor Preço</option>
+                <option value="desc">Maior Preço</option>
+            </select>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalGerenciar" onclick="app.limparForm()">+ Novo Produto</button>
+        </div>
+    </div>
+
+    <div class="row g-4" id="listaProdutos"></div>
+</div>
+
+<div class="modal fade" id="modalGerenciar" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><h5 id="tituloModal">Gerenciar Produto</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+            <input type="hidden" id="prodId">
+            <input type="text" id="prodNome" class="form-control mb-2" placeholder="Nome">
+            <div class="row g-2 mb-2">
+                <div class="col"><input type="number" id="prodPreco" class="form-control" placeholder="Preço"></div>
+                <div class="col"><input type="number" id="prodEstoque" class="form-control" placeholder="Estoque"></div>
+            </div>
+            <select id="prodCat" class="form-select mb-2">
+                <option>Eletrônicos</option><option>Acessórios</option><option>Casa</option>
+            </select>
+            <textarea id="prodDesc" class="form-control" placeholder="Descrição"></textarea>
+        </div>
+        <div class="modal-footer"><button class="btn btn-primary w-100" onclick="app.salvarProduto()">Salvar Produto</button></div>
+    </div></div>
+</div>
+
+<div class="modal fade" id="modalCarrinho" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><h5>Seu Carrinho</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body" id="cart-items-list"></div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Voltar</button>
+            <button class="btn btn-success" onclick="app.finalizarPedido()">Fechar Compra</button>
+        </div>
+    </div></div>
+</div>
+
+<div class="modal fade" id="modalAvaliar" tabindex="-1">
+    <div class="modal-dialog modal-sm"><div class="modal-content">
+        <div class="modal-header"><h5>Avaliar</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body text-center">
+            <input type="hidden" id="avaliarProdId">
+            <select id="notaEstrela" class="form-select mb-3">
+                <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                <option value="4">⭐⭐⭐⭐ (4)</option>
+                <option value="3">⭐⭐⭐ (3)</option>
+                <option value="2">⭐⭐ (2)</option>
+                <option value="1">⭐ (1)</option>
+            </select>
+            <button class="btn btn-primary w-100" onclick="app.salvarAvaliacao()">Enviar</button>
+        </div>
+    </div></div>
+</div>
+
+<div id="chatbot-window" class="card shadow-lg" style="display:none;">
+    <div class="card-header bg-primary text-white d-flex justify-content-between"><span>Assistente</span><button class="btn-close btn-close-white" onclick="toggleChat()"></button></div>
+    <div id="chat-body" class="card-body overflow-auto" style="height: 200px;"></div>
+    <div class="card-footer"><input type="text" id="chat-input" class="form-control" placeholder="Pergunta..." onkeypress="if(event.key=='Enter') bot.pergunta()"></div>
+</div>
+<button id="chat-trigger" class="btn btn-primary rounded-circle shadow" onclick="toggleChat()">💬</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

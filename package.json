@@ -1,0 +1,11 @@
+{
+  "name": "eshop-express",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "express-session": "^1.18.1"
+  }
+}
